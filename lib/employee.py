@@ -163,19 +163,16 @@ class Employee:
 
     @classmethod
     def find_by_id(cls, id):
-        """Return Employee object corresponding to the table row matching the specified primary key"""
         sql = """
             SELECT *
             FROM employees
             WHERE id = ?
         """
-
         row = CURSOR.execute(sql, (id,)).fetchone()
         return cls.instance_from_db(row) if row else None
 
     @classmethod
     def find_by_name(cls, name):
-        """Return Employee object corresponding to first table row matching specified name"""
         sql = """
             SELECT *
             FROM employees
@@ -186,5 +183,11 @@ class Employee:
         return cls.instance_from_db(row) if row else None
 
     def reviews(self):
-        """Return list of reviews associated with current employee"""
-        pass
+        from review import Review
+        sql = """
+            SELECT * FROM reviews
+            WHERE employee_id = ?
+        """
+        CURSOR.execute(sql, (self.id,))
+        rows = CURSOR.fetchall()
+        return [Review.instance_from_db(row) for row in rows]
